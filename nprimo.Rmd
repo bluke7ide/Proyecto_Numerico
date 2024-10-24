@@ -1,0 +1,75 @@
+---
+title: "Untitled"
+author: "Luis Fernando Amey Apuy"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+entero <- function(x){
+  return(floor(cos(pi*x)^2))
+}
+```
+
+```{r}
+conduitf <- function(i){
+  return(entero((factorial(i-1)+1)/i))
+} 
+```
+
+```{r}
+conduitd <- function(i){
+  rep <- 1:i
+  val <- sum(sapply(rep, function(x) entero(i/x)))
+  return(entero((val/2)^-pi))
+}
+```
+
+```{r}
+n <- 1:100
+
+# este es el conduit inicial. No detecta altos por factoriales y error float
+sapply(n, conduitf)
+
+# al hacer las divisiones y verificar que es entero, podemos acelerar el proceso
+sapply(n, conduitd)
+
+```
+
+```{r}
+nprimo <- function(n){
+  itermax <- log(n, 2)*n + 2
+  prev <- sapply(1:itermax, conduitd)
+  
+  conduct <- function(x) 1 + sum(prev[1:x])
+  suma <- 1 + sum(sapply(1:itermax, function(i) floor((n/conduct(i))^(1/n) )))
+  return(suma)
+}
+```
+
+```{r}
+sapply(1:168, nprimo)
+```
+
+```{r}
+nprimo(168)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
