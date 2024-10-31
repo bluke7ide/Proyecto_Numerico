@@ -29,4 +29,4 @@ function primo = nprimo(x, coref)
 end
 
 
-numeros = arrayfun(@(x) nprimo(x, div2), 1:25)';
+numeros = arrayfun(@(x) nprimo(x, div2), 1:168)';
