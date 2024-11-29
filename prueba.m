@@ -8,7 +8,7 @@ zeros_rho = arrayfun(@(k) mpmath.zetazero(int32(k)), 1:n, UniformOutput=0);
 zeros_rho = cellfun(@(z) double(py.float(z.imag).real), zeros_rho, UniformOutput=0)';
 zeros_rho = cell2mat(zeros_rho);
 
-function Rk = R0_function(x, k, N, zeros_rho)
+function Rk = R0_function(x, N)
     % Parámetros:
     % x: Valor en el que se evalúa Rk
     % k: Número de pares de ceros de zeta considerados
@@ -18,13 +18,8 @@ function Rk = R0_function(x, k, N, zeros_rho)
     % Definir la función de Möbius
     mu = @(n) mobius(n);
 
-    % Inicializar Rk
-    Rk = 0;
-
-    % Primer término
-    for n = 1:N
-        Rk = Rk + (mu(n) / n) * li_function(x^(1/n));
-    end
+    % Primer termino
+    Rk = R_function(x, N);
 
     % Segundo término
     for n = 1:N
@@ -33,13 +28,6 @@ function Rk = R0_function(x, k, N, zeros_rho)
         Rk = Rk + (mu(n) / n) * (integral_value - log(2));
     end
 
-    % Tercer término
-    for p = 1:k
-        rho = zeros_rho(p);
-        for n = 1:N
-            Rk = Rk - (mu(n) / n) * (li_function(x^(rho/n)) + li_function(x^(conj(rho)/n)));
-        end
-    end
 end
 
 % Función Möbius
@@ -62,13 +50,6 @@ function m = mobius(n)
     m = (-1)^numel(unique_factors);
 end
 
-
-
-% x = 3; % Valor de evaluación
-% k = 10;  % Primeros 5 ceros no triviales
-% N = 10; % Máximo para n
-% Rk_value = Rk_function(x, k, N, zeros);
-% disp(Rk_value);
 
 %%
 function R = R_function(X, N)
@@ -94,15 +75,12 @@ end
 function li = li_function(y)
     % Aproximación de la función logarítmica integral
     % Usar la integración numérica para calcular li(y)
-    li = integral(@(t) 1 ./ log(t), 2, y, 'ArrayValued', true);
+    if imag(y) == 0
+        li = integral(@(t) 1 ./ log(t), 2, y, 'ArrayValued', true);
+    else
+        li = integral(@(t) 1 ./ log(t), 0, y, 'ArrayValued', true);
+    end
 end
-
-% X = 10000; % Punto de evaluación
-% N = 100; % Límite superior de la suma
-% 
-% R_value = R_function(X, N);
-% 
-% disp(['R(', num2str(X), ') = ', num2str(R_value)]);
 
 function Ck = Ck_function(X, k, N, zeros_rho)
     % Parámetros:
@@ -119,7 +97,7 @@ function Ck = Ck_function(X, k, N, zeros_rho)
     term2 = R_function(X^(0.5 - 1i * gamma_k), N);
 
     % Calcular Ck
-    Ck = - (term1 + term2);
+    Ck = real(- (term1 - term2));
 end
 
 function Rk = Rk_approximation(X, k, N, zeros_rho)
@@ -131,7 +109,7 @@ function Rk = Rk_approximation(X, k, N, zeros_rho)
     % N : Límite superior para la suma en la función R(X)
 
     % Inicializar Rk(X)
-    Rk = R0_function(X,0, N, zeros_rho);
+    Rk = R0_function(X, N);
 
     % Iterar para construir la aproximación Rk
     for j = 1:k
@@ -147,4 +125,6 @@ N = 100; % Límite superior de la suma
 
 Rk_value = Rk_approximation(X, k, N, zeros_rho);
 
+
 disp(['R_', num2str(k), '(', num2str(X), ') = ', num2str(Rk_value)]);
+R0_function(X, 0, N, zeros_rho)
