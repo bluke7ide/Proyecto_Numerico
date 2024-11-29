@@ -142,7 +142,7 @@ end
 
 
 X = 10; % Punto de evaluación
-k = 1; % Número de ceros no triviales
+k = 10; % Número de ceros no triviales
 N = 100; % Límite superior de la suma
 
 Rk_value = Rk_approximation(X, k, N, zeros_rho);
