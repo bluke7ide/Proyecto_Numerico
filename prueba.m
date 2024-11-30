@@ -97,7 +97,7 @@ function Ck = Ck_function(X, k, N, zeros_rho)
     term2 = R_function(X^(0.5 - 1i * gamma_k), N);
 
     % Calcular Ck
-    Ck = real(- (term1 - term2));
+    Ck = real(- (term1 + term2));
 end
 
 function Rk = Rk_approximation(X, k, N, zeros_rho)
@@ -127,4 +127,4 @@ Rk_value = Rk_approximation(X, k, N, zeros_rho);
 
 
 disp(['R_', num2str(k), '(', num2str(X), ') = ', num2str(Rk_value)]);
-R0_function(X, 0, N, zeros_rho)
+R0_function(X, N)
